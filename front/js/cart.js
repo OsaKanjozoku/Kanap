@@ -204,14 +204,15 @@ function validationFormulaire() {
         firstNameErrorMsg.innerHTML = "Veuillez renseigner un prénom.";
         return false;
       } else {
+        firstNameErrorMsg.innerHTML = "";
         if (lastName.value === "" || lastName.value === null || lastName.value === undefined) {
           lastNameErrorMsg.innerHTML = globalErrorMsg;
         } else {
           if (verifTexte.exec(lastName.value) === null) {
-            firstNameErrorMsg.innerHTML = "";
             lastNameErrorMsg.innerHTML = "Veuillez renseigner un nom de famille.";
             return false;
           } else {
+            lastNameErrorMsg.innerHTML = "";
             if (address.value === "" || address.value === null || address.value === undefined) {
               addressErrorMsg.innerHTML = globalErrorMsg;
             } else {
@@ -219,6 +220,7 @@ function validationFormulaire() {
                 addressErrorMsg.innerHTML = "Veuillez renseigner une adresse.";
                 return false;
               } else {
+                addressErrorMsg.innerHTML = "";
                 if (city.value === "" || city.value === null || city.value === undefined) {
                   cityErrorMsg.innerHTML = globalErrorMsg;
                 } else {
@@ -226,6 +228,7 @@ function validationFormulaire() {
                     cityErrorMsg.innerHTML = "Veuillez renseigner une ville.";
                     return false;
                   } else {
+                    cityErrorMsg.innerHTML = "";
                     if (email.value === "" || email.value === null || email.value === undefined) {
                       emailErrorMsg.innerHTML = globalErrorMsg;
                     } else {
@@ -233,6 +236,7 @@ function validationFormulaire() {
                         emailErrorMsg.innerHTML = "Le format de l'adresse mail est incorrect.";
                         return false;
                       } else {
+                        emailErrorMsg.innerHTML = "";
                         //une fois toutes ces vérifications effectuées, on peut valider le formulaire
                         //on peut donc récupérer les id des canapés stockés et créer l'objet contact
                         //suivi du tableau d'id products
