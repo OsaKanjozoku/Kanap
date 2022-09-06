@@ -15,7 +15,13 @@ fetch("http://localhost:3000/api/products")
   })
 
 //On déclare une variable panier pour accéder au localStorage
-let panier = JSON.parse(localStorage.getItem("allKanaps"));
+let test = localStorage.getItem("allKanaps");
+let panier = JSON.parse(test);
+//test n'a aucun prix de stocké, il y a uniquement la couleur, la quantité et l'id 
+console.log(test)
+// panier dispose des infos de prix photosq etc sans aucune action de localStorage.setItem()
+console.log(panier)
+panier.sort((a, b) => (a._id > b._id) ? 1 : -1);
 //Création d'un message lorsque le panier est vide, avec redirection sur la page d'accueil
 let message = `Vous n'avez pas encore ajouté d'articles,<br>
 <a href='index.html'>Cliquez ici</a> pour parcourir nos produits!`;
@@ -24,10 +30,9 @@ let message = `Vous n'avez pas encore ajouté d'articles,<br>
 function affichageKanaps(index) {
 
 
-
   if (panier && panier.length != 0) {
-
-    for (let choix of panier) {
+    let panier2 = panier;
+    for (let choix of panier2) {
       for (let i = 0, il = index.length; i < il; i++) {
         if (choix._id === index[i]._id) {
 
@@ -39,8 +44,7 @@ function affichageKanaps(index) {
         }
       }
     }
-
-    affiche(panier);
+    affiche(panier2);
 
   } else {
     document.getElementById("totalQuantity").innerHTML = "0";
@@ -58,7 +62,7 @@ function affiche(panier) {
 
   let zonePanier = document.getElementById("cart__items");
 
-  zonePanier.innerHTML += panier.map((choix, key) =>
+  zonePanier.insertAdjacentHTML('afterbegin', panier.map((choix, key) =>
     `<article class="cart__item" data-id="${choix._id}" data-key="${key}" data-couleur="${choix.color}" data-quantité="${choix.quantity}" data-prix="${choix.prix}"> 
       <div class="cart__item__img">
         <img src="${choix.image}" alt="${choix.alt}">
@@ -72,14 +76,14 @@ function affiche(panier) {
         <div class="cart__item__content__settings">
           <div class="cart__item__content__settings__quantity">
             <p>Qté : </p>
-            <input type="number" class="itemQuantity" name="${choix._id}" min="1" max="100" value="${choix.quantity}">
+            <input type="number" class="itemQuantity" id="itemQuantity-${choix._id}" name="${choix._id}" min="1" max="100" value="${choix.quantity}">
           </div>
           <div class="cart__item__content__settings__delete">
             <p class="deleteItem" data-id="${choix._id}" data-couleur="${choix.couleur}">Supprimer</p>
           </div>
         </div>
       </div>
-    </article>`
+    </article>`)
   )
 };
 
@@ -90,17 +94,23 @@ function modifier() {
   if (Array.from(Articles).length != 0) {
     Array.from(Articles).forEach((article) => {
       let dataKey = article.getAttribute("data-key");
+      let dataId = article.getAttribute("data-id");
       let deleteItem = article.getElementsByClassName("deleteItem");
       article.addEventListener("input", (quantity) => {
         let nouvelleQuantité = quantity.target.value;
-        panier[dataKey].quantity = nouvelleQuantité;
-        localStorage.setItem("allKanaps", JSON.stringify(panier));
-        let dataPrix = article.getAttribute("data-prix");
-        let nouveauPrix = nouvelleQuantité * dataPrix;
-        let prix = document.getElementById("prix-" + dataKey);
-        prix.innerHTML = nouveauPrix + '€'; //Modification du prix instantanément sans recharger la page 
-        //On rappelle la fonction Total pour mettre à jour les quantités et prix totaux en bas du panier
-        Total();
+        if (nouvelleQuantité === "0") {
+          alert('Impossible de sélectionner une valeur inférieure à 1 !');
+          document.getElementById("itemQuantity-" + dataId).value = panier[dataKey].quantity;
+        } else {
+          panier[dataKey].quantity = nouvelleQuantité;
+          localStorage.setItem("allKanaps", JSON.stringify(panier));
+          let dataPrix = article.getAttribute("data-prix");
+          let nouveauPrix = nouvelleQuantité * dataPrix;
+          let prix = document.getElementById("prix-" + dataKey);
+          prix.innerHTML = nouveauPrix + '€'; //Modification du prix instantanément sans recharger la page 
+          //On rappelle la fonction Total pour mettre à jour les quantités et prix totaux en bas du panier
+          Total();
+        }
       })
       //On écoute le click du texte "Supprimer" et on supprime toutes les quantités du canapé sélectionné
       deleteItem[0].addEventListener("click", () => {
@@ -145,6 +155,7 @@ function Total() {
     document.querySelector("#totalPrice").innerHTML = "0";
   }
 };
+
 
 //Variable permettant de stocker l'id de tous les canapés stockés dans le panier sous forme de tableau 
 let IdKanap = [];

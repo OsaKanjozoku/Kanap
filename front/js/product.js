@@ -1,9 +1,10 @@
 //on crée une variable pour pouvoir récupérer l'id de chaque canapé sur sa page spécifique
 let params = (new URL(document.location)).searchParams;
 let id = params.get("id");
+console.log(id)
 
 //on se connecte à l'API pour pouvoir en récupérer les infos
-fetch("http://localhost:3000/api/products")
+fetch("http://localhost:3000/api/products/" + id)
 
   .then(function (res) {
     if (res.ok) {
@@ -19,28 +20,24 @@ fetch("http://localhost:3000/api/products")
   })
 
 // Fonction affichage produit sur la page produits propre à chaque canapé
-function leKanap(canapes) {
+function leKanap(canape) {
+
   let imgAlt = document.querySelector("article div.item__img");
   let name = document.querySelector("#title");
   let price = document.querySelector("#price");
   let description = document.querySelector("#description");
   let colors = document.querySelector("#colors");
 
-  for (let canape of canapes) {
-    if (id === canape._id) {
-      imgAlt.innerHTML += `<img src="${canape.imageUrl}" 
-                            alt="${canape.altTxt}">`;
-      name.innerHTML += `${canape.name}`;
-      price.innerHTML += `${canape.price}`;
-      description.innerHTML += `${canape.description}`;
-      for (let color of canape.colors) {
-        colors.innerHTML += `<option value=${color}>${color}</option>`;
-      }
-    }
 
+  imgAlt.insertAdjacentHTML('afterbegin', `<img src="${canape.imageUrl}" 
+                            alt="${canape.altTxt}">`);
+  name.insertAdjacentHTML('afterbegin', `${canape.name}`);
+  price.insertAdjacentHTML('afterbegin', `${canape.price}`);
+  description.insertAdjacentHTML('afterbegin', `${canape.description}`);
+  for (let color of canape.colors) {
+    colors.insertAdjacentHTML('beforeend', `<option value=${color}>${color}</option>`);
   }
-
-}
+};
 
 //Déclaration objet canap pour ajout au panier
 let canap = {
@@ -114,7 +111,7 @@ function AjoutProduitPanier() {
 
 
   //On vérifié si l'id et la couleur du canapé choisit est déjà stockée dans le localStorage
-  //Si id et couleur sont déjà stocké, alros on modifie la quantité déjà existante
+  //Si id et couleur sont déjà stocké, alors on modifie la quantité déjà existante
   if (matchId && matchColor) {
     if (searchMatching !== -1) {
       existingKanap[searchMatching].quantity = existingKanap[searchMatching].quantity + choixQuantite;
@@ -131,8 +128,10 @@ function AjoutProduitPanier() {
     document.querySelector("#addToCart").style.color = "rgb(0, 205, 0)";
     document.querySelector("#addToCart").textContent = "Produit ajouté !";
     document.getElementById("colors").value = "";
+    console.log(existingKanap)
   }
 };
+
 
 
 
