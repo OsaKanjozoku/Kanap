@@ -15,13 +15,17 @@ fetch("http://localhost:3000/api/products")
   })
 
 //On déclare une variable panier pour accéder au localStorage
-let test = localStorage.getItem("allKanaps");
-let panier = JSON.parse(test);
-//test n'a aucun prix de stocké, il y a uniquement la couleur, la quantité et l'id 
-console.log(test)
-// panier dispose des infos de prix photosq etc sans aucune action de localStorage.setItem()
-console.log(panier)
-panier.sort((a, b) => (a._id > b._id) ? 1 : -1);
+let storage = localStorage.getItem("allKanaps");
+let panier = JSON.parse(storage);
+
+let panier2 = [];
+
+  for (let article of panier) { 
+    let canap = { _id: article._id, color: article.color, quantity: article.quantity };
+     panier2.push(canap)
+     panier2.sort((a, b) => (a._id > b._id) ? 1 : -1);
+    }
+
 //Création d'un message lorsque le panier est vide, avec redirection sur la page d'accueil
 let message = `Vous n'avez pas encore ajouté d'articles,<br>
 <a href='index.html'>Cliquez ici</a> pour parcourir nos produits!`;
@@ -30,8 +34,7 @@ let message = `Vous n'avez pas encore ajouté d'articles,<br>
 function affichageKanaps(index) {
 
 
-  if (panier && panier.length != 0) {
-    let panier2 = panier;
+  if (panier2 && panier2.length != 0) {
     for (let choix of panier2) {
       for (let i = 0, il = index.length; i < il; i++) {
         if (choix._id === index[i]._id) {
@@ -76,7 +79,7 @@ function affiche(panier) {
         <div class="cart__item__content__settings">
           <div class="cart__item__content__settings__quantity">
             <p>Qté : </p>
-            <input type="number" class="itemQuantity" id="itemQuantity-${choix._id}" name="${choix._id}" min="1" max="100" value="${choix.quantity}">
+            <input type="number" class="itemQuantity-${key}" id="itemQuantity-${choix._id}" name="${choix._id}" min="1" max="100" value="${choix.quantity}">
           </div>
           <div class="cart__item__content__settings__delete">
             <p class="deleteItem" data-id="${choix._id}" data-couleur="${choix.couleur}">Supprimer</p>
@@ -102,8 +105,8 @@ function modifier() {
           alert('Impossible de sélectionner une valeur inférieure à 1 !');
           document.getElementById("itemQuantity-" + dataId).value = panier[dataKey].quantity;
         } else {
-          panier[dataKey].quantity = nouvelleQuantité;
-          localStorage.setItem("allKanaps", JSON.stringify(panier));
+          panier2[dataKey].quantity = nouvelleQuantité;
+          localStorage.setItem("allKanaps", JSON.stringify(panier2))
           let dataPrix = article.getAttribute("data-prix");
           let nouveauPrix = nouvelleQuantité * dataPrix;
           let prix = document.getElementById("prix-" + dataKey);
@@ -114,8 +117,8 @@ function modifier() {
       })
       //On écoute le click du texte "Supprimer" et on supprime toutes les quantités du canapé sélectionné
       deleteItem[0].addEventListener("click", () => {
-        panier.splice(dataKey, 1);
-        localStorage.setItem("allKanaps", JSON.stringify(panier));
+        panier2.splice(dataKey, 1);
+        localStorage.setItem("allKanaps", JSON.stringify(panier2));
         article.remove();
         Total();
         //Si panier vide alors on remet le message comme quoi le panier est vide avec le lien vers la page d'accueil
@@ -136,11 +139,11 @@ function modifier() {
 function Total() {
   let totalPrice = 0;
   let totalQuantity = 0;
-  panier.forEach((element) => {
-    totalQuantity += JSON.parse(element.quantity);
+  panier2.forEach((element) => {
+    totalQuantity += parseInt(element.quantity);
     let quantity = document.getElementById("totalQuantity");
     quantity.innerHTML = totalQuantity;
-  })
+  });
   let prixElements = document.getElementsByClassName("cart__item");
   if (Array.from(prixElements).length != 0) {
     Array.from(prixElements).forEach((prixElement) => {
@@ -310,5 +313,3 @@ function validationFormulaire() {
 
 //on appelle la fonction de validation du formulaire
 validationFormulaire();
-
-

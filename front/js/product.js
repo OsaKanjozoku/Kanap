@@ -1,7 +1,6 @@
 //on crée une variable pour pouvoir récupérer l'id de chaque canapé sur sa page spécifique
 let params = (new URL(document.location)).searchParams;
 let id = params.get("id");
-console.log(id)
 
 //on se connecte à l'API pour pouvoir en récupérer les infos
 fetch("http://localhost:3000/api/products/" + id)
@@ -128,7 +127,6 @@ function AjoutProduitPanier() {
     document.querySelector("#addToCart").style.color = "rgb(0, 205, 0)";
     document.querySelector("#addToCart").textContent = "Produit ajouté !";
     document.getElementById("colors").value = "";
-    console.log(existingKanap)
   }
 };
 
